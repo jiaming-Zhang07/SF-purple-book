@@ -6,8 +6,7 @@ using namespace std;
 string a[10000][10];
 map<string, int>bin;
 int main() {
-	freopen("z.txt", "r", stdin);
-	freopen("zjm.txt", "w", stdout);
+	
 	int r, c;
 	while (cin >> r >> c) {char ch;
 		while ((ch = getchar()) != '\n' && ch != '\r');
@@ -27,11 +26,11 @@ int main() {
 			for (int j = i + 1; j < c; j++)
 				{bin.clear();
 				for (int k = 0; k < r; k++) {
-					if (bin.count(a[k][i] + "\0" + a[k][j])) {
-						cout << "NO" << endl << bin[a[k][i] + "\0" + a[k][j]]+1 << " " << k+1 << endl << i+1 << " " << j+1 << endl;
+					if (bin.count(a[k][i] + "\1" + a[k][j])) {
+						cout << "NO" << endl << bin[a[k][i] + "\1" + a[k][j]]+1 << " " << k+1 << endl << i+1 << " " << j+1 << endl;
 						goto jump;
 					}
-					bin[a[k][i] + "\0" + a[k][j]] = k;
+					bin[a[k][i] + "\1" + a[k][j]] = k;
 				}
 			}
 		cout << "YES" << endl;

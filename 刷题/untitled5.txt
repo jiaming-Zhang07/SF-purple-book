@@ -1,0 +1,5 @@
+Player Name          Place     RD1  RD2  RD3  RD4  TOTAL     Money Won
+-----------------------------------------------------------------------
+Amateur Top 1* 1         70   70   70   70   280       
+Pro Second           2T        71   70   70   70   281       $300.00  
+Amateur Tied 2* 2T        71   70   70   70   281
