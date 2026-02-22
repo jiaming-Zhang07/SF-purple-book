@@ -1191,3 +1191,25 @@ fgets(s, sizeof(s), stdin);
 193.当用完scanf接着需要用fgets时会有遗留换行符，解决方法：
 while(scanf("%d\n",&a)==1){fgets(s,sizeof(s),stdin);}//在 scanf 的格式字符串中，任何空白字符（空格      、回车 \n、制表符 \t）的意思都是：“持续读取并丢弃输入流中的所有空白字符，直到遇到第一个非空白字符为止。”
 194.现代宏定义：using LL=long long;
+195.deque的front所在处是下标0
+196.不是void的函数一定要显式写出return，否则返回的是随机值，如bool型可能返回false或true，不确定。
+197.char s[1005] = {0}; // 将所有元素初始化为 '\0' (ASCII 0)
+198.取出集合中的最大元素：
+```cpp
+set<int> s = {1, 5, 10, 2};
+int max_val = *s.rbegin(); // 结果是 10,也可以是*(--s.end());
+```
+199.set<int, greater<int>> s;这样就是从大到小排列了，for(auto x:s)就可以从大到小遍历了，也可以for (auto it = s.rbegin(); it != s.rend(); ++it)这样遍历
+200.greater<>后面是否加括号的规则：在尖括号 < > 里不加括号，在圆括号 ( ) 里通常要加括号。set<int, greater<int>>这里的 greater<int> 充当的是模板参数你是在告诉 set 容器：“请使用这个类（Class/Struct）作为你的比较规则。
+sort(..., greater<int>())sort 函数需要接收一个具体的实例（Instance），即一个活生生的“比较器对象”，这里的 greater<int>() 是在调用构造函数来创建一个临时对象。
+201.求所有元素的最大值：用max_element,它返回的是一个迭代器（指针），所以需要用 * 解引用来获取值。求最小值用min_element.
+```cpp
+int a[] = {3, 1, 9, 7, 5};
+    int n = 5;
+    // 1. 对于普通数组
+    int max_val = *max_element(a, a + n);//一定要注意a+n是最后一个元素地址的下一处地址
+    // 2. 对于 vector
+     vector<int> v = {3, 1, 9};
+     int max_v = *max_element(v.begin(), v.end());
+```
+202.tuple也可以放二元。
