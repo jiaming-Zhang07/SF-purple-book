@@ -1,68 +1,79 @@
 #include<bits/stdc++.h>
 using namespace std;
-char ch[20], ch2[20];
-int cnt, maxn;
-bool equa(char*s) {
-	int a = 0, b = 0, c = 0, t = 0;
-	while (s[t] != ' ')
+char ch[20];
+int  maxn, len_ch;
+int getlen(int n) {
+	if (n == 0)
+		return 1;
+	int len = 0;
+	while (n > 0) {
+		n /= 10;
+		len++;
+	}
+	return len;
+}
+bool match(int a, int pos, int len) {
+	for (int i = len - 1; i >= 0; i--) {
+		if (ch[pos + i] != '*' && a % 10 + '0' != ch[pos + i])
+			return false;
+		a /= 10;
+	}
+	return true;
+}
+bool is_good() {
+	int t = 0, cnt = 0;
+	while (ch[t] != ' ')
 		t++;
-	for (int i = 0; i < t; i++) {
-		a = a * 10 + s[i] - '0';
-	}
-	for (t = t + 1; s[t] != ' '; t++) {
-		b = b * 10 + s[t] - '0';
-	}
-	for (int i = t + 1; s[i] != '\n' && s[i] != '\r'; i++ )
-		c = c * 10 + s[i] - '0';
-	if (a * b == c)
+	int lena = t;
+	t++;
+	while (ch[t] != ' ')
+		t++;
+	int lenb = t - lena - 1;
+	int lenc = 1;
+	while (ch[t + lenc] != '\n' && ch[t + lenc] != '\r')
+		lenc++;
+	lenc--;
+	int mina = lena == 1 ? 1 : 10, maxa = lena == 1 ? 9 : 99;
+	int minb = lenb == 1 ? 1 : 10, maxb = lenb == 1 ? 9 : 99;
+	int minc = lenc == 1 ? 1 : (lenc == 2 ? 10 : (lenc == 3 ? 100 : 1000)), maxc = lenc == 1 ? 9 : (lenc == 2 ? 99 : (lenc == 3 ? 999 : 9999));
+	for (int a = mina; a <= maxa; a++)
+		if ( match(a, 0, lena))
+			for (int b = minb; b <= maxb ; b++)
+				if ( match(b, lena + 1, lenb)) {
+					int c = a*b;
+					if ( c >= minc && c <= maxc && match(c, lena + lenb + 2, lenc)) {
+						cnt++;
+						if (cnt > 1)
+							return false;
+					}
+				}
+	if (cnt == 1)
 		return true;
 	return false;
 }
-void dfs(int t) {
-	while (ch[t] != '*' && ch[t] != '\0')
-		t++;
-	if (ch[t] == '\0') {
-		if (equa(ch2))
-			cnt++;
-		return ;
-	}
-	for (int i = (((t == 0 || ch[t - 1] == ' ') && ch[t + 1]!=' '&&ch[t+1]!='\n'&&ch[t+1]!='\r') ? 1 : 0); i < 10; i++) {
-		ch2[t] = '0' + i;
-		dfs(t + 1);
-		if(cnt>1)return;
-	}
-}
+char ch2[] = {'*', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
 bool dfs2(int n, int t) {
 	if (n == maxn) {
-		memcpy(ch2, ch, sizeof(ch));
-		cnt = 0;
-		dfs(0);
-		if (cnt == 1)
+		if (is_good())
 			return true;
 		return false;
 	}
-	for (int i = t; i < (int)strlen(ch); i--) {
-		if (ch[i] == ' ' )
+	int i = t;
+	while (ch[i] == ' ' )
+		i++;
+	if (ch[i] == '\n' || ch[i] == '\r')
+		return false;
+	if (len_ch - i - 1 < maxn - n)
+		return false;
+	for (int j = 0; j < 11; j++) {
+		if (j == 1 && ((i == 0 || ch[i - 1] == ' ') && ch[i + 1] != ' ' && ch[i + 1] != '\n' && ch[i + 1] != '\r'))
 			continue;
-		if(ch[i]=='\n'||ch[i]=='\r')break;
-		if ((int)strlen(ch)-i-1 < maxn - n)
-			break;
-		if (ch[i] != '*') {
-			char c2 = ch[i];
-			ch[i] = '*';
-			if (dfs2(n + 1, i + 1))
-				return true;
-			ch[i] = c2;
-		}
-		for (int j = (((t == 0 || ch[t - 1] == ' ') && ch[t + 1]!=' '&&ch[t+1]!='\n'&&ch[t+1]!='\r') ? 1 : 0); j < 10; j++) {
-			if (ch[i] == '0' + j)
-				continue;
-			char cc = ch[i];
-			ch[i] = '0' + j;
-			if (dfs2(n + 1, i +1))
-				return true;
-			ch[i] = cc;
-		}
+		char cc = ch[i];
+		int next_n = ch[i] == ch2[j] ? n : n + 1;
+		ch[i] = ch2[j];
+		if (dfs2(next_n, i + 1))
+			return true;
+		ch[i] = cc;
 	}
 	return false;
 }
@@ -70,12 +81,10 @@ int main() {
 	int kase = 0;
 	while (fgets(ch, 20, stdin) && ch[0] != '0') {
 		printf("Case %d: ", ++kase);
-		cnt = 0;
-		memcpy(ch2, ch, sizeof(ch));
-		dfs(0);
-		if (cnt != 1) {
+		len_ch = strlen(ch);
+		if (!is_good()) {
 			for ( maxn = 1;; maxn++)
-				if (dfs2(0, strlen(ch) - 1))
+				if (dfs2(0, 0))
 					break;
 		}
 		for (int i = 0; i < (int)strlen(ch); i++)
