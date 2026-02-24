@@ -1,45 +1,48 @@
-#include<bits/stdc++.h>
+#include <bits/stdc++.h>
 using namespace std;
-set<int,greater<int>> s;
-int n,maxans;
-int h() {
-	int t = *s.begin();
-	int cnt = 0;
-	while (t < n) {
-		t *= 2;
-		cnt++;
-	}
-	return cnt;
+int ans, t[12][12], g[12][12], vis[12][12], rec[120], d[2][2] = {{0, 1}, {1, 0}}, cas;
+bool init() {
+	ans = 0;
+	memset(rec, 0, sizeof rec);
+	memset(vis, 0, sizeof vis);
+	for (int i = 0; i < 7; i++) for (int j = 0; j < 8; j++)
+		if (scanf("%d", &g[i][j]) != 1) return 0;
+	return 1;
 }
-bool dfs(int d, int maxd, int m) {
-	if (m == n)
-	{maxans=max(d,maxans);
-		return true;
-	}
-	if (h() > maxd - d||d==maxd)
-		return false;
-	for (auto x : s) {
-		int have=0;if(s.count(m+x))have=1;
-		else s.insert(m + x);
-		if (dfs(d + 1, maxd, m + x))
-			return true;
-		if(!have)
-			s.erase(m + x);
-		if(m-x<=0)continue;
-		have=0;
-		if(s.count(m-x))have=1;else s.insert(m - x);
-		if (dfs(d + 1, maxd, m - x))
-			return true;
-		if(!have)
-			s.erase(m - x);
-	}return false;
+void sxd() {
+	int c = 1;
+	for (int i = 0; i < 7; i++) for (int j = i; j < 7; j++) t[i][j] = t[j][i] = c++;
 }
-int main() {
-	for(n =1;n<=1000;n++) {
-		
-		for (int maxd = 0;; maxd++)
-		{s.clear();s.insert(1);
-			if (dfs(0, maxd,1)) break;
+void put() {
+	for (int i = 0; i < 7; i++) { for (int j = 0; j < 8; j++) printf("%4d", vis[i][j]); puts(""); }
+	puts("");
+}
+void dfs(int x, int y, int c) {
+	if (c == 28) {ans++; put(); return;}
+	if (y == 8) x++, y = 0;
+	if (vis[x][y]) dfs(x, y + 1, c);
+	else {
+		for (int i = 0; i < 2; i++) {
+			int p = x + d[i][0], q = y + d[i][1];
+			if (p >= 7 || q >= 8 || vis[p][q]) continue;
+			int k = t[g[x][y]][g[p][q]];
+			if (rec[k]) continue;
+			vis[x][y] = vis[p][q] = k; rec[k] = 1;
+			dfs(x, y + 1, c + 1);
+			vis[x][y] = vis[p][q] = 0; rec[k] = 0;
 		}
-	}cout<<maxans;
+	}
 }
+signed main() {
+	sxd();
+	while (init()) {
+		if (cas) cout << "\n\n\n";
+		printf("Layout #%d:\n\n", ++cas);
+		for (int i = 0; i < 7; i++) {for (int j = 0; j < 8; j++) printf("%4d", g[i][j]); puts("");}
+		printf("\nMaps resulting from layout #%d are:\n\n", cas);
+		dfs(0, 0, 0);
+		printf("There are %d solution(s) for layout #%d.\n", ans, cas);
+	}
+	return 0;
+}
+

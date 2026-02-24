@@ -8,7 +8,7 @@ struct dot {
 };
 char ch[] = {'\0', 'n', 'w', 'e', 's'};
 int maxl;
-
+set<dot>ob;
 int c[21];
 int cnt;
 int vis[250][250];
@@ -24,23 +24,29 @@ void dfs(int point, int d, dot dot2) {
 	}
 	if (d == maxl + 1)
 		return;
+	int can[5];
+	memset(can, -1, sizeof(can));
+	for (auto x : ob) {
+		if (x.y == dot2.y && dot2.x - x.x <= d && dot2.x - x.x >= 0 )
+			can[2] = 0;
+		if (x.x == dot2.x && dot2.y - x.y <= d && dot2.y - x.y >= 0)
+			can[4] = 0;
+		if (x.x == dot2.x && x.y - dot2.y <= d && x.y - dot2.y >= 0)
+			can[1] = 0;
+		if (x.y == dot2.y && x.x - dot2.x  <= d && x.x - dot2.x >= 0)
+			can[3] = 0;
+	}
 	if (point == 1 || point == 4) {
-		int i;
-		for ( i = 1; i <= d; i++) {
-			if (vis[125 + dot2.x + i][125 + dot2.y]) {
-				goto jump;
-			}
+		if (vis[125 + dot2.x + d][125 + dot2.y] || !can[3]) {
+			goto jump;
 		}
 		c[d] = 3;
 		vis[125 + dot2.x + d][125 + dot2.y] = 1;
 		dfs(3, d + 1, dot{dot2.x + d, dot2.y});
 		vis[125 + dot2.x + d][125 + dot2.y] = 0;
 jump:
-		for ( i = 1; i <= d; i++) {
-			if (vis[125 + dot2.x - i][125 + dot2.y]) {
-				goto jump4;
-			}
-		}
+		if (vis[125 + dot2.x - d][125 + dot2.y] || !can[2])
+			goto jump4;
 		c[d] = 2;
 		vis[125 + dot2.x - d][125 + dot2.y] = 1;
 		dfs(2, d + 1, dot{dot2.x - d, dot2.y});
@@ -48,20 +54,15 @@ jump:
 jump4:
 		;
 	} else if (point == 2 || point == 3) {
-		int i;
-		for ( i = 1; i <= d; i++) {
-			if (vis[125 + dot2.x][125 + dot2.y + i])
-				goto jump2;
-		}
+		if (vis[125 + dot2.x][125 + dot2.y + d] || !can[1])
+			goto jump2;
 		c[d] = 1;
 		vis[125 + dot2.x][125 + dot2.y + d] = 1;
 		dfs(1, d + 1, dot{dot2.x, dot2.y + d});
 		vis[125 + dot2.x][125 + dot2.y + d] = 0;
 jump2:
-		for ( i = 1; i <= d; i++) {
-			if (vis[125 + dot2.x][125 + dot2.y - i])
-				goto jump3;
-		}
+		if (vis[125 + dot2.x][125 + dot2.y - d] || !can[4])
+			goto jump3;
 		c[d] = 4;
 		vis[125 + dot2.x][125 + dot2.y - d] = 1;
 		dfs(4, d + 1, dot{dot2.x, dot2.y - d});
@@ -70,11 +71,11 @@ jump3:
 		;
 	}
 }
-int main() {freopen("z.txt", "r", stdin);
-	freopen("zjm.txt", "w", stdout);
+int main() {
+
 	int T;
 	scanf("%d", &T);
-	while (T--) {
+	while (T--) {ob.clear();
 		memset(vis, 0, sizeof(vis));
 		cnt = 0;
 		int  m;
@@ -82,45 +83,47 @@ int main() {freopen("z.txt", "r", stdin);
 		for (int i = 0; i < m; i++) {
 			int x, y;
 			scanf("%d%d", &x, &y);
-			vis[125 + x][125 + y] = 1;
+			ob.insert(dot{x, y});
 		}
 		dot dot2{0, 0 };
-		int d = 1;
-		int i;
-		for ( i = 1; i <= d; i++) {
-			if (vis[125 + dot2.x + i][125 + dot2.y]) {
-				goto jump;
-			}
+		int d = 1, can[5];
+		memset(can, -1, sizeof(can));
+		for (auto x : ob) {
+			if (x.y == dot2.y && dot2.x - x.x <= d && dot2.x - x.x >= 0)
+				can[2] = 0;
+			if (x.x == dot2.x && dot2.y - x.y <= d && dot2.y - x.y >= 0)
+				can[4] = 0;
+			if (x.x == dot2.x && x.y - dot2.y <= d && x.y - dot2.y >= 0)
+				can[1] = 0;
+			if (x.y == dot2.y && x.x - dot2.x  <= d && x.x - dot2.x >= 0)
+				can[3] = 0;
+		}
+		if (vis[125 + dot2.x + d][125 + dot2.y] || !can[3]) {
+			goto jump;
 		}
 		c[d] = 3;
 		vis[125 + dot2.x + d][125 + dot2.y] = 1;
 		dfs(3, d + 1, dot{dot2.x + d, dot2.y});
 		vis[125 + dot2.x + d][125 + dot2.y] = 0;
 jump:
-		for ( i = 1; i <= d; i++) {
-			if (vis[125 + dot2.x][125 + dot2.y + i]) {
-				goto jump2;
-			}
+		if (vis[125 + dot2.x][125 + dot2.y + d] || !can[1]) {
+			goto jump2;
 		}
 		c[d] = 1;
 		vis[125 + dot2.x][125 + dot2.y + d] = 1;
 		dfs(1, d + 1, dot{dot2.x, dot2.y + d});
 		vis[125 + dot2.x][125 + dot2.y + d] = 0;
 jump2:
-		for ( i = 1; i <= d; i++) {
-			if (vis[125 + dot2.x][125 + dot2.y - i]) {
-				goto jump3;
-			}
+		if (vis[125 + dot2.x][125 + dot2.y - d] || !can[4]) {
+			goto jump3;
 		}
 		c[d] = 4;
 		vis[125 + dot2.x][125 + dot2.y - d] = 1;
 		dfs(4, d + 1, dot{dot2.x, dot2.y - d});
 		vis[125 + dot2.x][125 + dot2.y - d] = 0;
 jump3:
-		for ( i = 1; i <= d; i++) {
-			if (vis[125 + dot2.x - i][125 + dot2.y]) {
-				goto jump4;
-			}
+		if (vis[125 + dot2.x - d][125 + dot2.y] || !can[2]) {
+			goto jump4;
 		}
 		c[d] = 2;
 		vis[125 + dot2.x - d][125 + dot2.y] = 1;
