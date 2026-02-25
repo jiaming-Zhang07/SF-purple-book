@@ -1,0 +1,9 @@
+BasedOnStyle: LLVM
+# 1. 允许保留 1 个空行，这样函数之间、逻辑块之间可以有呼吸感
+MaxEmptyLinesToKeep: 0
+# 2. 依然禁止在代码块（如 while/for）开始处留空行
+KeepEmptyLinesAtTheStartOfBlocks: false
+# 3. 设置极大的行宽限制，确保 printf 不会自动折行（1000 足够涵盖绝大多数竞赛代码）
+ColumnLimit: 1000
+# 4. 确保即使函数很短，也不要强行挤在一行
+AllowShortFunctionsOnASingleLine: None

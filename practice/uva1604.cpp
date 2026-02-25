@@ -6,19 +6,24 @@ struct cell {
 cell a[3][3];
 int sta[3][3];
 int ans[3][3], maxd;
-int dr[] = {1, -1, 0, 0}, dc[] = {0, 0, 1, -1};
-bool dfs(int r, int c, int d, int ban) {int nban;
-	if (d == maxd) {
+int dr[] = {1, -1, 0, 0}, dc[] = {0, 0, 1, -1},ac,ar;
+ 
+bool dfs(int r, int c, int d, int ban) {int nban,cnt=0;
 		sta[r][c] = 0;
+	if (d == maxd) {
+	
 		for (int i = 0; i < 3; i++)
 			for (int j = 0; j < 3; j++)
 				if (sta[i][j] != ans[i][j])
 					return false;
 		return true;
 	}
+	for(int i=0;i<3;i++)for(int j=0;j<3;j++)if(sta[i][j]!=ans[i][j])cnt++;
+	if(d+cnt-1>maxd)return false;
+	
 	for (int i = 0; i < 4; i++)
 		if (i != ban && r + dr[i] >= 0 && r + dr[i] < 3 && c + dc[i] >= 0 && c + dc[i] < 3) {
-			cell t = a[r + dr[i]][c + dc[i]];
+			cell t = a[r + dr[i]][c + dc[i]];int old_sta=sta[r+dr[i]][c+dc[i]];
 			switch (i) {
 				case 0:
 					nban = 1;
@@ -43,6 +48,7 @@ bool dfs(int r, int c, int d, int ban) {int nban;
 			}
 			if (dfs(r + dr[i], c + dc[i], d + 1, nban))
 				return true;
+			sta[r+dr[i]][c+dc[i]]=old_sta;a[r + dr[i]][c + dc[i]]=t;
 		}return false;
 }
 int main() {
@@ -54,11 +60,11 @@ int main() {
 				char t;
 				while(scanf("%c", &t)==1&&!isalpha(t));
 				switch (t) {
-					case'E':ans[i][j]=0;break;case 'W':ans[i][j]=1;break;case'R':ans[i][j]=2;break;case 'B':ans[i][j]=3;break;}
+					case'E':ans[i][j]=0;ar=i;ac=j;break;case 'W':ans[i][j]=1;break;case'R':ans[i][j]=2;break;case 'B':ans[i][j]=3;break;}
 						}
 				for (int i = 0; i < 3; i++)
 					for (int j = 0; j < 3; j++)
-						if (i != r && j != c) {
+						if (i != r || j != c) {
 							sta[i][j] = 1;
 							a[i][j] = cell{1, 2, 3};
 						}
