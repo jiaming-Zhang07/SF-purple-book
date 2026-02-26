@@ -2,6 +2,13 @@
 *.o
 *.out
 .vs/
-.vscode/
 bin/
 obj/
+# 竞赛插件生成的测试数据（CPH 插件）
+.cph/
+
+# 针对 clangd 插件生成的索引缓存（如果你使用了 clangd）
+.clangd/
+
+# 针对某些 IDE 产生的本地历史或备份
+*.stackdump

@@ -1,0 +1,34 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "竞赛调试",
+            "type": "cppdbg",
+            "request": "launch",
+            // 关键：这里必须和你 tasks.json 里的 -o 路径完全一致
+            "program": "${fileDirname}\\${fileBasenameNoExtension}.exe",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${fileDirname}",
+            "environment": [],
+            "externalConsole": true,
+            "MIMode": "gdb",
+            "miDebuggerPath": "gdb", // 如果你没配环境变量，这里可能需要填 gdb.exe 的全路径
+            "setupCommands": [
+                {
+                    "description": "为 gdb 启用整齐打印",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                },
+                {
+                    "description": "彻底跳过标准库和系统头文件",
+                    "text": "-interpreter-exec console \"skip -gfi C:/mingw64/*\"",
+                    "ignoreFailures": true
+                }
+            ],
+            // 建议：如果你觉得内置终端不好用，可以把下面这行改为 true，弹黑框输入
+            // 关键：这里必须是你 tasks.json 里的 label 名字
+            "preLaunchTask": "Compile"
+        }
+    ]
+}
