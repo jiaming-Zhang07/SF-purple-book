@@ -1356,4 +1356,30 @@ std::erase_if(v, [](const interval &inv) {
 备份：创建一个当前迭代器 it 的临时副本（保存当前指向的地址）。
 移动：将原迭代器 it 指向下一个节点（即执行 ++it）。
 返回：返回那个保存了旧地址的副本。
-245.
+245.用已经填充好的vector或数组初始化deque:
+```cpp
+#include <vector>
+#include <deque>
+std::vector<int> v = {3, 2, 1};
+// 使用 vector 的起始和结束迭代器初始化
+std::deque<int> dq(v.begin(), v.end());
+int arr[] = {3, 2, 1};
+int n = 3;
+// 数组名是首地址，arr + n 是结束地址（左闭右开）
+std::deque<int> dq(arr, arr + n);
+```
+246.greater<type>里面用的是大于号。所以传入的类型需要定义大于号;
+247.fill可以填充任意数；fill(a,a+n,k);
+248.priority_queue的第三个参数必须传类型，不能传自己定义的比较函数，必须把这个函数变为一个类型,可以用结构体的方法：
+```cpp
+struct Node {
+    int id, val;
+};
+// 想要 val 小的先出队（小顶堆）
+struct cmp {
+    bool operator()(const Node& a, const Node& b) {
+        return a.val > b.val; // 注意：pq 里的逻辑是“若为 true 则优先级低”
+    }
+};
+priority_queue<Node, vector<Node>, cmp> pq;
+```
