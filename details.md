@@ -1383,3 +1383,4 @@ struct cmp {
 };
 priority_queue<Node, vector<Node>, cmp> pq;
 ```
+249.数组尺寸较大的情况下可以用short(范围：-32768~32767)：short f[5005][5005];防止内存过大。
