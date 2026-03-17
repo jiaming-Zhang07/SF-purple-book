@@ -1,72 +1,72 @@
-// UVa1625 Color Length
-// Rujia Liu
-#include <algorithm>
-#include <cstdio>
-#include <cstring>
-
+#include <iostream>
+#include <queue>
+#include <string>
+#include <vector>
 using namespace std;
-const int maxn = 5000 + 5;
-const int INF = 1000000000;
-char p[maxn], q[maxn];              // starts from position 1
-int sp[26], sq[26], ep[26], eq[26]; // sp[i] start positions of character i in p
-int d[2][maxn], c[2][maxn];         // c[i][j]: how many "incomplete" colors in the mixed sequence
+struct Course {
+  string name;
+  int s, d, c;
+};
 int main() {
-  int T;
-  scanf("%d", &T);
-  while (T--) {
-    scanf("%s%s", p + 1, q + 1);
-    int n = strlen(p + 1);
-    int m = strlen(q + 1);
-    for (int i = 1; i <= n; i++)
-      p[i] -= 'A';
-    for (int i = 1; i <= m; i++)
-      q[i] -= 'A';
-    // calculate s and e
-    for (int i = 0; i < 26; i++) {
-      sp[i] = sq[i] = INF;
-      ep[i] = eq[i] = 0;
+  // 关流同步，应对 2e5 的巨大 IO 量
+  ios::sync_with_stdio(false);
+  cin.tie(nullptr);
+  int m, n;
+  if (!(cin >> m >> n))
+    return 0;
+  // 课程下标从 1 到 n
+  vector<Course> courses(n + 1);
+  // exam_day[i] 记录第 i 天是哪门课的考试（存储课程 ID，0 表示无考试）
+  vector<int> exam_day(m + 1, 0);
+  // release[i] 记录在第 i 天公布的所有课程 ID
+  vector<vector<int>> release(m + 1);
+  for (int i = 1; i <= n; ++i) {
+    cin >> courses[i].name >> courses[i].s >> courses[i].d >> courses[i].c;
+    exam_day[courses[i].d] = i;
+    release[courses[i].s].push_back(i);
+  }
+  // 优先队列（小根堆）：存储 pair<考试日 d_i, 课程 ID>
+  // 这样默认就会按照 d_i 从小到大排序（死线最近的优先）
+  priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> pq;
+  // ans 数组预设为全 REST，方便直接覆盖
+  vector<string> ans(m + 1, "REST");
+  bool die = false;
+  // 扫描线：时间 t 从 1 流逝到 m
+  for (int t = 1; t <= m; ++t) {
+    // 1. 将今天刚刚公布的课程加入候选池
+    for (int id : release[t]) {
+      pq.push({courses[id].d, id});
     }
-    for (int i = 1; i <= n; i++) {
-      sp[p[i]] = min(sp[p[i]], i);
-      ep[p[i]] = i;
+    // 2. 优先级最高：检查今天是不是某个科目的考试日
+    if (exam_day[t] != 0) {
+      int id = exam_day[t];
+      // 考试到了，但没复习完，直接寄
+      if (courses[id].c > 0) {
+        die = true;
+        break;
+      }
+      ans[t] = "EXAM";
     }
-    for (int i = 1; i <= m; i++) {
-      sq[q[i]] = min(sq[q[i]], i);
-      eq[q[i]] = i;
-    }
-    // dp
-    int t = 0;
-    memset(c, 0, sizeof(c));
-    memset(d, 0, sizeof(d));
-    for (int i = 0; i <= n; i++) {
-      for (int j = 0; j <= m; j++) {
-        if (!i && !j)
-          continue;
-        // calculate d
-        int v1 = INF, v2 = INF;
-        if (i)
-          v1 = d[t ^ 1][j] + c[t ^ 1][j]; // remove from p
-        if (j)
-          v2 = d[t][j - 1] + c[t][j - 1]; // remove from q
-        d[t][j] = min(v1, v2);
-        // calculate c
-        if (i) {
-          c[t][j] = c[t ^ 1][j];
-          if (sp[p[i]] == i && sq[p[i]] > j)
-            c[t][j]++;
-          if (ep[p[i]] == i && eq[p[i]] <= j)
-            c[t][j]--;
-        } else if (j) {
-          c[t][j] = c[t][j - 1];
-          if (sq[q[j]] == j && sp[q[j]] > i)
-            c[t][j]++;
-          if (eq[q[j]] == j && ep[q[j]] <= i)
-            c[t][j]--;
+    // 3. 今天没有考试，可以复习或者休息
+    else {
+      if (!pq.empty()) {
+        int id = pq.top().second;
+        pq.pop();
+        ans[t] = courses[id].name;
+        courses[id].c--; // 复习了一天
+        // 如果还需要复习，重新塞回堆里
+        if (courses[id].c > 0) {
+          pq.push({courses[id].d, id});
         }
       }
-      t ^= 1;
     }
-    printf("%d\n", d[t ^ 1][m]);
+  }
+  if (die) {
+    cout << "DIE\n";
+  } else {
+    for (int t = 1; t <= m; ++t) {
+      cout << ans[t] << "\n";
+    }
   }
   return 0;
 }

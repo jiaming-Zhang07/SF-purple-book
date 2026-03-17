@@ -1384,3 +1384,11 @@ struct cmp {
 priority_queue<Node, vector<Node>, cmp> pq;
 ```
 249.数组尺寸较大的情况下可以用short(范围：-32768~32767)：short f[5005][5005];防止内存过大。
+250.配合fgets使用的神兵利器：
+```cpp
+s[strcspn(s, "\r\n")] = '\0';
+    n = strlen(s);
+```
+strcspn:它在字符串 s1 中搜索 第一个 属于字符串 s2 中任意字符的位置，并返回该位置的索引.
+如果找到了：返回第一个匹配字符的下标。
+如果没找到：返回 s1 的长度（即 strlen(s1)）。
