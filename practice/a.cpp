@@ -1,41 +1,83 @@
 #include <bits/stdc++.h>
 using namespace std;
 using ll = long long;
-ll ans = 0;
-ll a[60];
-ll n, dd, w;
-int wei[60];
-void dfs(ll sum, int i, int d, int maxd) {
-  if (i + dd < n && (64 - __builtin_clzll(sum) > wei[i + dd] && 1ll << (64 - __builtin_clzll(sum) - 1) > w))
-    return;
-  if (d == maxd) {
-    if (sum > w)
+const int M = 850000;
+int sum[M * 30], son[M * 30][2], n, d, w, a[60];
+ll ans;
+vector<pair<int, int>> r[2];
+void ldfs(int pos, int last, int en, int sum) {
+  if (pos > en) {
+    if (last == 0)
       return;
-    ans++;
+    if (sum <= w)
+      ans++;
+    r[0].push_back({last, sum});
     return;
   }
-  for (int j = i + dd; j < n; j++)
-    if (maxd - d - 1 <= (n - j - 1) / dd)
-      dfs(sum ^ a[j], j, d + 1, maxd);
+  ldfs(pos + 1, last, en, sum);
+  ldfs(pos + d, pos, en, sum ^ a[pos]);
+}
+void rdfs(int pos, int first, int en, int sum) {
+  if (pos > en) {
+    if (first == 0)
+      return;
+    if (sum <= w)
+      ans++;
+    r[1].push_back({first, sum});
+    return;
+  }
+  rdfs(pos + 1, first, en, sum);
+  if (first == 0)
+    first = pos;
+  rdfs(pos + d, first, en, sum ^ a[pos]);
+}
+int tot;
+void insert(int val) {
+  int u = 0;
+  for (int j = 29; j >= 0; j--) {
+    int c = val >> j & 1;
+    if (!son[u][c])
+      son[u][c] = ++tot;
+    u = son[u][c];
+    sum[u]++;
+  }
+}
+void query(int val) {
+  int u = 0;
+  for (int j = 29; j >= 0; j--) {
+    int c1 = val >> j & 1, c2 = w >> j & 1;
+    if (c2 == 0)
+      u = son[u][c1];
+    else {
+      ans += sum[son[u][c1]];
+      u = son[u][c1 ^ 1];
+    }
+    if (u == 0)
+      break;
+  }
+  if (u)
+    ans += sum[u];
 }
 int main() {
-  cin >> n >> dd >> w;
-  for (int i = 0; i < n; i++)
+  cin >> n >> d >> w;
+  for (int i = 1; i <= n; i++)
     cin >> a[i];
-  for (int i = n - 1; i >= 0; i--) {
-    int t = 64 - __builtin_clzll(a[i]);
-    wei[i] = max(wei[i + 1], t);
+  if (n == 1) {
+    cout << (a[1] <= w ? 1 : 0) << "\n";
+    return 0;
   }
-  for (int d = 1; d <= n; d++) {
-    if (d > (n - 1) / dd + 1)
-      break;
-    for (int i = 0; i < n; i++) {
-      if ((n - i - 1) / dd < d - 1)
-        break;
-      if ((d != 1 || a[i] <= w))
-        dfs(a[i], i, 1, d);
+  int mid = n / 2;
+  ldfs(1, 0, mid, 0);
+  rdfs(mid + 1, 0, n, 0);
+  sort(r[0].begin(), r[0].end());
+  sort(r[1].begin(), r[1].end());
+  for (int i = 0, j = 0; i < r[1].size(); i++) {
+    while (j < r[0].size() && r[0][j].first + d <= r[1][i].first) {
+      insert(r[0][j].second);
+      j++;
     }
+    query(r[1][i].second);
   }
-  cout << ans;
+  cout << ans << "\n";
   return 0;
 }

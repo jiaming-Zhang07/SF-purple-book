@@ -7,3 +7,4 @@ KeepEmptyLinesAtTheStartOfBlocks: false
 ColumnLimit: 1000
 # 4. 确保即使函数很短，也不要强行挤在一行
 AllowShortFunctionsOnASingleLine: None
+AllowShortLambdasOnASingleLine: None
