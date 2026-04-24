@@ -12,3 +12,8 @@ obj/
 
 # 针对某些 IDE 产生的本地历史或备份
 *.stackdump
+*.exe
+*.o
+*.win
+*.layout
+.vscode/
